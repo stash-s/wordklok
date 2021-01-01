@@ -9,14 +9,6 @@
 
 WordKlokDisplay::WordKlokDisplay() {}
 
-#ifdef ARDUINO
-ICACHE_RAM_ATTR
-inline void setDataBits(uint16_t bits) {
-    const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
-    --bits;
-    SPI1U1 = ((SPI1U1 & mask) | ((bits << SPILMOSI) | (bits << SPILMISO)));
-}
-
 static volatile WordKlokDisplay::payload_t _payload = 0;
 
 int WordKlokDisplay::_display_timer_divider;
@@ -24,8 +16,15 @@ int WordKlokDisplay::_animationStep = 0;
 int WordKlokDisplay::_animationCounter = 0;
 int WordKlokDisplay::_animationTreshold = 0;
 bool WordKlokDisplay::_animationStarted = false;
-
 static volatile int _pwm_level = PWM_MAX - 1;
+
+#ifdef ARDUINO
+ICACHE_RAM_ATTR
+inline void setDataBits(uint16_t bits) {
+    const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
+    --bits;
+    SPI1U1 = ((SPI1U1 & mask) | ((bits << SPILMOSI) | (bits << SPILMISO)));
+}
 
 ICACHE_RAM_ATTR
 static void shift_out(WordKlokDisplay::payload_t payload) {
