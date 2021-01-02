@@ -7,7 +7,7 @@
 #define LIGHT_LEVEL_MAX 11
 static const unsigned int light_level_bounds[] = {200, 300, 400, 500, 600, 700,
                                                   785, 830, 900, 990, 1023};
-static const size_t pwm_level[] = {32, 32, 32, 32, 32, 24, 16, 8, 6, 4, 2, 2};
+static const size_t pwm_level[] = {32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 16};
 
 LightSensor::LightSensor()
     : _interval(100), _readingHandler([](int i) {}),

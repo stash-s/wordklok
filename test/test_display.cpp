@@ -118,6 +118,8 @@ void test_23_20() { checkAllFlags(23, 20, {TWENTY, MINUTES, PAST, ELEVEN}); }
 
 void test_00_00() { checkAllFlags(0, 0, {IT, IS, TWELVE, OCLOCK}); }
 
+void test_25_to_five() { checkAllFlags(16, 36, {TWENTY, MFIVE, TO, HFIVE}); }
+
 void process() {
 
     UNITY_BEGIN();
@@ -145,6 +147,7 @@ void process() {
 
     RUN_TEST(test_23_20);
     RUN_TEST(test_00_00);
+    RUN_TEST(test_25_to_five);
 
     UNITY_END();
 }

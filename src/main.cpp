@@ -31,6 +31,8 @@ void setup() {
 
     display.startAnimation();
 
+    wifiManager.setAPCallback(
+        [](WiFiManager *mgr) { });
     wifiManager.setConfigPortalTimeout(180);
 
     Serial.println("connecting...");
@@ -91,6 +93,7 @@ void setup() {
     });
     ArduinoOTA.begin();
 
+    lightSensor.setFrequency(1);
     lightSensor.onLevelSet([](int level) {
         Serial.printf("Light level set to %d\n", level);
         display.setLightLevel(level);
