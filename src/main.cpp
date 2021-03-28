@@ -9,7 +9,7 @@
 WiFiManager wifiManager;
 
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 1 * 3600, 236 * 1000);
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 2 * 3600, 236 * 1000);
 String ntpPoolServerName;
 
 WordKlokDisplay display;
