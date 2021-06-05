@@ -1,16 +1,14 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
-#include <NTPClient.h>
 #include <WiFiManager.h>
+#include <ezTime.h>
 
 #include "display.h"
 #include "light_sensor.h"
 
 WiFiManager wifiManager;
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 2 * 3600, 236 * 1000);
-String ntpPoolServerName;
+Timezone poland;
 
 WordKlokDisplay display;
 
@@ -38,8 +36,6 @@ void setup() {
     Serial.println("connecting...");
     if (wifiManager.autoConnect("AutoconnectAP")) {
         Serial.println("connected ... yay!");
-        ntpPoolServerName = WiFi.gatewayIP().toString();
-        timeClient.setPoolServerName(ntpPoolServerName.c_str());
     } else {
         Serial.println("connection failed, rebooting");
         ESP.restart();
@@ -47,15 +43,19 @@ void setup() {
 
     display.endAnimation();
 
-    timeClient.onStartUpdate([]() {
+    poland.setLocation("Europe/Warsaw");
+
+    ezt::onNtpUpdateStart([]() {
         Serial.println("NTP Update started ....");
         display.startAnimation();
     });
-    timeClient.onEndUpdate([]() {
+    ezt::onNtpUpdateEnd([](bool result) {
         Serial.println("NTP update finished.");
         display.endAnimation();
     });
-    timeClient.begin();
+
+    ezt::setInterval(600);
+    ezt::waitForSync();
 
     ArduinoOTA.onStart([]() {
         String type;
@@ -109,24 +109,10 @@ void setup() {
 void loop() {
     ArduinoOTA.handle();
 
-    static int ntpFailCount = 0;
 
     if (!downloadInProgress) {
-
-        if (timeClient.update()) {
-            ntpFailCount = 0;
-
-            display.showTime(timeClient.getHours(), timeClient.getMinutes());
-
-        } else {
-            ++ntpFailCount;
-            Serial.println("NTP update failed");
-
-            if (ntpFailCount > 50) {
-                Serial.println("Number of failures exceeded limit, rebooting");
-                ESP.restart();
-            }
-        }
+        ezt::events();
+        display.showTime(poland.hour(), poland.minute());
     }
 
     lightSensor.handle();
