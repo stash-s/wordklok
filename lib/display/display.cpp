@@ -19,14 +19,14 @@ bool WordKlokDisplay::_animationStarted = false;
 static volatile int _pwm_level = PWM_MAX - 1;
 
 #ifdef ARDUINO
-ICACHE_RAM_ATTR
+IRAM_ATTR
 inline void setDataBits(uint16_t bits) {
     const uint32_t mask = ~((SPIMMOSI << SPILMOSI) | (SPIMMISO << SPILMISO));
     --bits;
     SPI1U1 = ((SPI1U1 & mask) | ((bits << SPILMOSI) | (bits << SPILMISO)));
 }
 
-ICACHE_RAM_ATTR
+IRAM_ATTR
 static void shift_out(WordKlokDisplay::payload_t payload) {
 
     while (SPI1CMD & SPIBUSY) { // wait until HSPI is ready.
@@ -38,7 +38,7 @@ static void shift_out(WordKlokDisplay::payload_t payload) {
     SPI1CMD |= SPIBUSY; // initiate transfer
 }
 
-ICACHE_RAM_ATTR
+IRAM_ATTR
 static void isr_call() {
 
     static int pwm_counter = 0;
@@ -207,7 +207,7 @@ void WordKlokDisplay::startAnimation() {
 }
 void WordKlokDisplay::endAnimation() { _animationStarted = false; }
 
-ICACHE_RAM_ATTR void WordKlokDisplay::animationStep() {
+IRAM_ATTR void WordKlokDisplay::animationStep() {
     if (_animationStarted) {
 
         if (_animationCounter >= _animationTreshold) {

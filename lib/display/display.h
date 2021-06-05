@@ -2,7 +2,7 @@
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
-#define ICACHE_RAM_ATTR
+#define IRAM_ATTR
 #endif // ARDUINO
 #include <stdint.h>
 
@@ -46,9 +46,10 @@ class WordKlokDisplay {
     void setLightLevel(int level);
     void setScrollBar(int level);
 
-    static void startAnimation();
-    static void endAnimation();
-    static ICACHE_RAM_ATTR void animationStep();
+    void startAnimation();
+    void endAnimation();
+    
+    static IRAM_ATTR void animationStep();
 
     typedef uint32_t payload_t;
 
