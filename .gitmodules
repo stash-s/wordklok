@@ -1,0 +1,3 @@
+[submodule "lib/ezTime"]
+	path = lib/ezTime
+	url = git@github.com:stash-s/ezTime.git
