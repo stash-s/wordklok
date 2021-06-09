@@ -18,6 +18,8 @@ bool downloadInProgress = false;
 
 void setup() {
 
+    //ezt::setDebug(DEBUG);
+
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
 
@@ -43,7 +45,9 @@ void setup() {
 
     display.endAnimation();
 
-    poland.setLocation("Europe/Warsaw");
+    if (!poland.setCache(0)) {
+        poland.setLocation("Europe/Warsaw");
+    }
 
     ezt::onNtpUpdateStart([]() {
         Serial.println("NTP Update started ....");
@@ -54,7 +58,6 @@ void setup() {
         display.endAnimation();
     });
 
-    ezt::setInterval(600);
     ezt::waitForSync();
 
     ArduinoOTA.onStart([]() {
@@ -65,8 +68,8 @@ void setup() {
             type = "filesystem";
         }
 
-        // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS
-        // using SPIFFS.end()
+        // NOTE: if updating SPIFFS this would be the place to unmount
+        // SPIFFS using SPIFFS.end()
         Serial.println("Start updating " + type);
     });
 
@@ -113,6 +116,16 @@ void loop() {
     if (!downloadInProgress) {
         ezt::events();
         display.showTime(poland.hour(), poland.minute());
+    }
+
+    static auto last_call = 0;
+
+    auto current_time = millis();
+    if (current_time - last_call >= 10000) {
+        last_call = current_time;
+
+        Serial.print("curent time: ");
+        Serial.println(poland.dateTime());
     }
 
     lightSensor.handle();
