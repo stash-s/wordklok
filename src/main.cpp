@@ -1,12 +1,15 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
-#include <WiFiManager.h>
 #include <ezTime.h>
+
+#include <ESPAsyncWebServer.h> //Local WebServer used to serve the configuration portal
+#include <ESPAsyncWiFiManager.h> //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
 #include "display.h"
 #include "light_sensor.h"
 
-WiFiManager wifiManager;
+AsyncWebServer server(80);
+DNSServer dns;
 
 Timezone poland;
 
@@ -31,9 +34,14 @@ void setup() {
 
     display.startAnimation();
 
-    wifiManager.setAPCallback(
-        [](WiFiManager *mgr) { });
+    AsyncWiFiManager wifiManager(&server, &dns);
+
+    //wifiManager.setAPCallback(
+    //    [](WiFiManager *mgr) { });
     wifiManager.setConfigPortalTimeout(180);
+
+    // exit after config instead of connecting
+    wifiManager.setBreakAfterConfig(true);
 
     Serial.println("connecting...");
     if (wifiManager.autoConnect("AutoconnectAP")) {
